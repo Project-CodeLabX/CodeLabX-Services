@@ -1,7 +1,9 @@
 package main
 
 import (
+	"codelabx/models"
 	"codelabx/repos"
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -19,7 +21,15 @@ func main() {
 func signUp(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	repos.AddUser()
+	var incomingUser models.User
+	json.NewDecoder(r.Body).Decode(&incomingUser)
 
-	w.Write([]byte("<h1> Hi from CodeLabx</h1>"))
+	if repos.UserExists(&incomingUser) {
+		json.NewEncoder(w).Encode("user Exists all ready")
+	} else {
+		ret := repos.AddUser(&incomingUser)
+		json.NewEncoder(w).Encode(&ret)
+	}
+
+	// w.Write([]byte("<h1> Hi from CodeLabx</h1>"))
 }
