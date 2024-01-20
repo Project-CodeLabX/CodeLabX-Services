@@ -1,6 +1,7 @@
 package main
 
 import (
+	"codelabx/repos"
 	"log"
 	"net/http"
 
@@ -17,6 +18,8 @@ func main() {
 
 func signUp(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	repos.AddUser()
 
 	w.Write([]byte("<h1> Hi from CodeLabx</h1>"))
 }
