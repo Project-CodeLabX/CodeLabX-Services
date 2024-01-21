@@ -53,3 +53,15 @@ func UserExists(user *models.User) bool {
 	}
 	return res > 0
 }
+
+func IsValidPassword(user *models.User) bool {
+	var dbUser = models.User{UserName: user.UserName}
+	res := db.First(&dbUser)
+
+	if res.Error != nil {
+		log.Fatal("Error during validate pass : ", res.Error)
+		return false
+	}
+
+	return user.Password == dbUser.Password
+}
