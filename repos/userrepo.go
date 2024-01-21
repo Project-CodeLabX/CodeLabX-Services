@@ -34,14 +34,15 @@ func autoMigrateModels(db *gorm.DB) {
 	db.AutoMigrate(&models.User{})
 }
 
-func AddUser(user *models.User) models.User {
+func AddUser(user *models.User) int {
 	res := db.Save(user)
 	if res.Error != nil {
 		log.Fatal("err during add user : ", res.Error)
+		return 0
 	}
 
 	fmt.Println("User saved successfully")
-	return *user
+	return 1
 }
 
 func UserExists(user *models.User) bool {

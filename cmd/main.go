@@ -1,6 +1,7 @@
 package main
 
 import (
+	"codelabx/auth"
 	"codelabx/models"
 	"codelabx/repos"
 	"encoding/json"
@@ -21,15 +22,25 @@ func main() {
 func signUp(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var incomingUser models.User
+	var incomingUser models.User //get incoming user
 	json.NewDecoder(r.Body).Decode(&incomingUser)
 
-	if repos.UserExists(&incomingUser) {
+	if repos.UserExists(&incomingUser) { //checking if identical user exists
 		json.NewEncoder(w).Encode("user Exists all ready")
-	} else {
-		ret := repos.AddUser(&incomingUser)
-		json.NewEncoder(w).Encode(&ret)
+		return
 	}
+	res := repos.AddUser(&incomingUser) // adding user to db
 
-	// w.Write([]byte("<h1> Hi from CodeLabx</h1>"))
+	if res == 1 {
+		// json.NewEncoder(w).Encode(&incomingUser)
+
+		tokenStr := auth.CreateToken(&incomingUser) //creating token
+
+		mp := map[string]string{"token": tokenStr, " message": "Welcome to CodeLabX"}
+		json.NewEncoder(w).Encode(&mp) // sending token to user
+		return
+	} else {
+		json.NewEncoder(w).Encode("Error Happened during process please try again.")
+		return
+	}
 }
