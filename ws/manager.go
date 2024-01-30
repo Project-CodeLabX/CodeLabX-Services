@@ -8,7 +8,10 @@ import (
 )
 
 var (
-	webSocketUpgrader websocket.Upgrader
+	webSocketUpgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
 )
 
 type manager struct{}

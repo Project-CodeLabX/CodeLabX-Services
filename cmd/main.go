@@ -106,5 +106,13 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 }
 
 func handShake(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	token := r.Header.Get("token")
+	ok := auth.IsAuthorized(token)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode("Token was Unauthorised...")
+		return
+	}
 	manager.ServeWs(w, r)
 }
