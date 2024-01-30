@@ -5,6 +5,7 @@ import (
 	"codelabx/models"
 	"codelabx/repos"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -16,6 +17,7 @@ func main() {
 
 	r.HandleFunc("/signup", signup).Methods("POST")
 	r.HandleFunc("/login", login).Methods("POST")
+	r.HandleFunc("/authorize", authorize).Methods("POST")
 
 	defer log.Fatal(http.ListenAndServe(":8010", r))
 }
@@ -68,5 +70,29 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNotFound)
 	json.NewEncoder(w).Encode("Invalid Password, Please check credentials")
+	return
+}
+
+func authorize(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	mp := map[string]string{}
+	mp["token"] = ""
+
+	err := json.NewDecoder(r.Body).Decode(&mp)
+	if err != nil {
+		log.Fatal("err in reading : ", err)
+	}
+
+	if mp["token"] != "" {
+		ans := auth.IsAuthorized(mp["token"])
+		if ans {
+			json.NewEncoder(w).Encode("Authorised token")
+		} else {
+			json.NewEncoder(w).Encode("Un-authorised token")
+		}
+		return
+	}
+	fmt.Println("token is empty")
 	return
 }

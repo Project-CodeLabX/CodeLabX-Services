@@ -2,6 +2,7 @@ package auth
 
 import (
 	"codelabx/models"
+	"fmt"
 	"log"
 	"time"
 
@@ -34,4 +35,26 @@ func CreateToken(user *models.User) string {
 	}
 
 	return tokenStr
+}
+
+func IsAuthorized(tokenStr string) bool {
+
+	claims := &claims{}
+
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) { return secret_key, nil })
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			fmt.Println("signature invalid...")
+			return false
+		}
+		fmt.Println("Bad request...")
+		return false
+	}
+
+	if !token.Valid {
+		fmt.Println("Unauthorised token...")
+		return false
+	}
+	fmt.Println("Authorized : valid token...")
+	return true
 }
