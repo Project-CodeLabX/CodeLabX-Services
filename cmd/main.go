@@ -4,6 +4,7 @@ import (
 	"codelabx/auth"
 	"codelabx/models"
 	"codelabx/repos"
+	"codelabx/ws"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -12,12 +13,19 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var (
+	manager = ws.NewManager()
+)
+
 func main() {
 	var r = mux.NewRouter()
 
 	r.HandleFunc("/signup", signup).Methods("POST")
 	r.HandleFunc("/login", login).Methods("POST")
 	r.HandleFunc("/authorize", authorize).Methods("POST")
+
+	//                                         websocket
+	r.HandleFunc("/handShake", handShake).Methods("GET")
 
 	defer log.Fatal(http.ListenAndServe(":8010", r))
 }
@@ -95,4 +103,8 @@ func authorize(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("token is empty")
 	return
+}
+
+func handShake(w http.ResponseWriter, r *http.Request) {
+	manager.ServeWs(w, r)
 }
