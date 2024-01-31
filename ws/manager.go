@@ -1,11 +1,13 @@
 package ws
 
 import (
+	"codelabx/rmq"
 	"fmt"
 	"net/http"
 	"sync"
 
 	"github.com/gorilla/websocket"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 var (
@@ -17,11 +19,13 @@ var (
 
 type manager struct {
 	Clients map[string]client
+	RmqConn *amqp.Connection
 	sync.RWMutex
 }
 
 func NewManager() *manager {
-	return &manager{Clients: map[string]client{}}
+	rmqConn := rmq.ConnectToRmq()
+	return &manager{Clients: map[string]client{}, RmqConn: rmqConn}
 }
 
 func (m *manager) AddClient(cl *client) {
