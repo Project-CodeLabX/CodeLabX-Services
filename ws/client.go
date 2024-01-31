@@ -1,19 +1,23 @@
 package ws
 
 import (
+	"codelabx/rmq"
 	"log"
 
 	"github.com/gorilla/websocket"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type client struct {
 	Username string
 	WsConn   *websocket.Conn
 	Manager  *manager
+	RmqCh    *amqp.Channel
 }
 
 func NewClient(username string, wsConn *websocket.Conn, manager *manager) client {
-	return client{Username: username, WsConn: wsConn, Manager: manager}
+	rmqCh := rmq.CreateChannel(manager.RmqConn)
+	return client{Username: username, WsConn: wsConn, Manager: manager, RmqCh: rmqCh}
 }
 
 func (c *client) ListenToClient() {

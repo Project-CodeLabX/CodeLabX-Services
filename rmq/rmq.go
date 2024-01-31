@@ -18,3 +18,11 @@ func ConnectToRmq() *amqp.Connection {
 	log.Println("Connected to rmq...")
 	return conn
 }
+
+func CreateChannel(conn *amqp.Connection) *amqp.Channel {
+	ch, err := conn.Channel()
+	if err != nil {
+		log.Println("error in rmq channel creation")
+	}
+	return ch
+}
