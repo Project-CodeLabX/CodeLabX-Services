@@ -2,7 +2,10 @@ package ws
 
 import (
 	"codelabx/rmq"
+	"context"
+	"encoding/json"
 	"log"
+	"time"
 
 	"github.com/gorilla/websocket"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -25,6 +28,7 @@ func (c *client) ListenToClient() {
 		c.WsConn.Close()
 	}()
 	log.Println("started Listening to client...")
+
 	for {
 		msgType, msg, err := c.WsConn.ReadMessage()
 
@@ -34,7 +38,31 @@ func (c *client) ListenToClient() {
 		}
 
 		log.Println("From : " + c.Username + ", Message type: " + string(msgType) + ", this is msg : " + string(msg))
-	}
 
+		var userEvent rmq.UserEvent
+		er := json.Unmarshal(msg, &userEvent)
+		userEvent.UserName = c.Username
+		if er != nil {
+			log.Println("json Unmarshal failed...")
+			return
+		}
+
+		context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		c.SendUserEventWithContext(context, &userEvent)
+	}
 	log.Println("stopped Listening to client...")
+}
+
+func (c *client) SendUserEventWithContext(ctx context.Context, userEvent *rmq.UserEvent) error {
+	event, err := json.Marshal(*userEvent)
+	if err != nil {
+		panic("error is send Message Marshaling...")
+	}
+	msg := amqp.Publishing{
+		ContentType:  "application/json",
+		DeliveryMode: amqp.Transient,
+		Body:         event,
+	}
+	return c.RmqCh.PublishWithContext(ctx, "codelabx", "user_event", true, false, msg)
 }
