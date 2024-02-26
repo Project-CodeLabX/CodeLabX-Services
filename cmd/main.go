@@ -30,6 +30,8 @@ func main() {
 
 	r.HandleFunc("/handShake", handShake).Methods("GET")
 
+	go manager.ListenToRedis()
+
 	defer log.Fatal(http.ListenAndServe(":8010", r))
 }
 

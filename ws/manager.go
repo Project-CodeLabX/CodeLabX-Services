@@ -3,7 +3,9 @@ package ws
 import (
 	"codelabx/rds"
 	"codelabx/rmq"
+	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"sync"
 
@@ -52,4 +54,24 @@ func (m *manager) ServeWs(w http.ResponseWriter, r *http.Request) {
 	m.AddClient(&cl)
 
 	go cl.ListenToClient()
+}
+
+func (m *manager) ListenToRedis() {
+
+	ctx := context.Background()
+
+	for {
+		for key, conn := range m.Clients {
+			stdout, err := m.Rdb.Get(ctx, key).Result()
+			if err == redis.Nil {
+				fmt.Println("key does not exist")
+			} else if err != nil {
+				log.Println("error in listenToRedis : ", err)
+			} else {
+				conn.WsConn.WriteMessage(1, []byte(stdout))
+				m.Rdb.Del(ctx, key)
+			}
+		}
+	}
+
 }
