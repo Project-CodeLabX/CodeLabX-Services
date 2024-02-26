@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"codelabx/rds"
 	"codelabx/rmq"
 	"fmt"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/redis/go-redis/v9"
 )
 
 var (
@@ -21,11 +23,12 @@ type manager struct {
 	Clients map[string]client
 	RmqConn *amqp.Connection
 	sync.RWMutex
+	Rdb *redis.Client
 }
 
 func NewManager() *manager {
 	rmqConn := rmq.ConnectToRmq()
-	return &manager{Clients: map[string]client{}, RmqConn: rmqConn}
+	return &manager{Clients: map[string]client{}, RmqConn: rmqConn, Rdb: rds.GetRedisClient()}
 }
 
 func (m *manager) AddClient(cl *client) {
