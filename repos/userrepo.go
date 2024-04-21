@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	dsn = "root:10601060@tcp(localhost:3306)/codelabx_dev?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn = "abhi:abhi1060@tcp(codelabx-auth-db.cbc0yumwi7uk.ap-south-1.rds.amazonaws.com:3306)/codelabx_users?charset=utf8mb4&parseTime=True&loc=Local"
 )
 
 var db *gorm.DB

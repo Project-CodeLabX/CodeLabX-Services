@@ -64,7 +64,7 @@ func (m *manager) ListenToRedis() {
 		for key, conn := range m.Clients {
 			stdout, err := m.Rdb.Get(ctx, key).Result()
 			if err == redis.Nil {
-				fmt.Println("key does not exist")
+				// fmt.Println("key does not exist")
 			} else if err != nil {
 				log.Println("error in listenToRedis : ", err)
 			} else {
