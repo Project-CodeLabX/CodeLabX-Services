@@ -64,5 +64,8 @@ func (c *client) SendUserEventWithContext(ctx context.Context, userEvent *rmq.Us
 		DeliveryMode: amqp.Transient,
 		Body:         event,
 	}
-	return c.RmqCh.PublishWithContext(ctx, "codelabx", "user_event", true, false, msg)
+	if userEvent.Language == "python" {
+		return c.RmqCh.PublishWithContext(ctx, "codelabx", "py_events", true, false, msg)
+	}
+	return c.RmqCh.PublishWithContext(ctx, "codelabx", "java_events", true, false, msg)
 }
