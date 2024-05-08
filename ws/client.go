@@ -26,6 +26,7 @@ func NewClient(username string, wsConn *websocket.Conn, manager *manager) client
 func (c *client) ListenToClient() {
 	defer func() {
 		c.WsConn.Close()
+		c.Manager.RemoveClient(c)
 	}()
 	log.Println("started Listening to client...")
 
@@ -44,7 +45,7 @@ func (c *client) ListenToClient() {
 		userEvent.UserName = c.Username
 		if er != nil {
 			log.Println("json Unmarshal failed...")
-			return
+			break
 		}
 
 		context, cancel := context.WithTimeout(context.Background(), 5*time.Second)

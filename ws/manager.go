@@ -39,6 +39,12 @@ func (m *manager) AddClient(cl *client) {
 	m.Unlock()
 }
 
+func (m *manager) RemoveClient(cl *client) {
+	m.Lock()
+	delete(m.Clients, cl.Username)
+	m.Unlock()
+}
+
 func (m *manager) ServeWs(w http.ResponseWriter, r *http.Request) {
 	wsConn, err := webSocketUpgrader.Upgrade(w, r, nil)
 
