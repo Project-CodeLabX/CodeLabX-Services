@@ -2,12 +2,13 @@ package rmq
 
 import (
 	"log"
+	"os"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-const (
-	url string = "amqps://abhi:Deadshot1060@b-195dfc46-2db6-4582-b92b-ff6bc1a3b4fd.mq.ap-south-1.amazonaws.com:5671/codelabx"
+var (
+	url string = os.Getenv("CLX_MQ")
 )
 
 func ConnectToRmq() *amqp.Connection {

@@ -6,10 +6,6 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-const (
-	url = "redis://52.66.243.237:6379/0?protocol=3"
-)
-
 func GetRedisClient() *redis.Client {
 	return redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("CLX_REDIS"),

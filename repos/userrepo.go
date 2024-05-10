@@ -4,16 +4,16 @@ import (
 	"codelabx/models"
 	"fmt"
 	"log"
+	"os"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-const (
-	dsn = "abhi:Deadshot1060@tcp(codelabx-auth-db.cbc0yumwi7uk.ap-south-1.rds.amazonaws.com:3306)/codelabx_users?charset=utf8mb4&parseTime=True&loc=Local"
+var (
+	dsn string = os.Getenv("CLX_AUTH_DB")
+	db  *gorm.DB
 )
-
-var db *gorm.DB
 
 func init() {
 	db, _ = connectToDB()
