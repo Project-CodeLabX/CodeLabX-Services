@@ -26,6 +26,7 @@ func NewClient(username string, wsConn *websocket.Conn, manager *manager) client
 func (c *client) ListenToClient() {
 	defer func() {
 		c.WsConn.Close()
+		c.RmqCh.Close()
 		c.Manager.RemoveClient(c)
 	}()
 	log.Println("started Listening to client...")
